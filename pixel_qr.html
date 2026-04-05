@@ -123,6 +123,33 @@
             }
         }
 
+        G.addEventListener('pointerdown', function(e) {
+            var t=e.target;
+            if(!t.classList.contains('c')) return;
+
+            drw=1;
+            mov=0;
+            var n = Array.prototype.indexOf.call(G.children, t);
+            dir=t.classList.contains('on') ? 0 : 1;
+            pnt(n);
+        });
+
+        G.addEventListener('pointermove', function(e) {
+            if(!drw) return;
+            mov=1;
+            var t=e.target;
+            if(t && t.classList.contains('c')){
+                var n = Array.prototype.indexOf.call(G.children, t);
+                pnt(n);
+            }
+        });
+        document.addEventListener('pointerup', function(e) {
+            drw=0;
+        });
+        document.addEventListener('pointercancel', function(e) {
+            drw=0;
+        });
+
         function rnd() {
             var c = G.children;
             for (var j = 0; j < 64; j++) {
