@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel QR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #111111;
+            font-family: sans-serif;
+        }
+
+        #g {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 3px;
+            padding: 12px;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        div.c {
+            width: 38px;
+            height: 38px;
+            background-color: #222222;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+        div.c.on {
+            background-color: #f0e040;
+        }
+
+        h1 {
+            color: #f0e040;
+            font-size: 18px;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        button {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background-color: #f0e040;
+            border: none;
+            border-radius: 6px;
+            color: #111111;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: background-color 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pixel QR</h1>
+    <div id="g"></div>
+    <button onclick="rnd()">RNDM</button>
+    <script>
+        var G = document.getElementById('g');
+        var i=0;
+        for(; i<64; i++) {
+            var d = document.createElement('div');
+            d.className='c';
+            d.onclick = function() {
+                this.classList.toggle('on');
+            };
+            G.appendChild(d);
+        }
+        function rnd() {
+            var c = G.children;
+            for (var j = 0; j < 64; j++) {
+                c[j].classList[Math.random() > 0.5 ? 'add' : 'remove']('on');
+            };
+        }
+    </script>
+</body>
+</html>
