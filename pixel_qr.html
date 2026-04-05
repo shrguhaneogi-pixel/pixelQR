@@ -104,6 +104,25 @@
             
         }
 
+        function pnt(n) {
+            var c = G.children;
+            if(!c[n] || !c[n].classList.contains('c')) return;{
+            }
+            c[n].classList[dir ? 'add' : 'remove']('on');
+            var x = n % 8;
+            var y = ~~(n / 8);
+
+            if(sym===1 || sym===3) {
+                c[y*8 + (7-x)].classList[dir ? 'add' : 'remove']('on');
+            }
+            if(sym===2 || sym===3) {
+                c[(7-y)*8 + x].classList[dir ? 'add' : 'remove']('on');
+            }
+            if(sym===3) {
+                c[(7-y)*8 + (7-x)].classList[dir ? 'add' : 'remove']('on');
+            }
+        }
+
         function rnd() {
             var c = G.children;
             for (var j = 0; j < 64; j++) {
