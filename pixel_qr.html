@@ -150,6 +150,22 @@
             drw=0;
         });
 
+        G.addEventListener('dblclick', function() {
+            if(mov) return;
+            inv();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if(e.key === 'i') inv();
+        });
+
+        function inv() {
+            var c = G.children;
+            for (var j = 0; j < 64; j++) {
+                c[j].classList.toggle('on');
+            };
+        }
+
         function rnd() {
             var c = G.children;
             for (var j = 0; j < 64; j++) {
