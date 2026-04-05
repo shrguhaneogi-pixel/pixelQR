@@ -28,18 +28,31 @@
             padding: 12px;
             background-color: #1a1a1a;
             border-radius: 10px;
+            touch-action: none;
         }
 
         div.c {
             width: 38px;
             height: 38px;
-            background-color: #222222;
+            background-color: #222;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.1s ease;
         }
+
         div.c.on {
             background-color: #f0e040;
+            animation: pop 120ms ease-in-out 0s infinite alternate;
+        }
+
+        @keyframes pop {
+            0%, 50% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            
         }
 
         h1 {
@@ -68,23 +81,36 @@
     <h1>Pixel QR</h1>
     <div id="g"></div>
     <button onclick="rnd()">RNDM</button>
+    <button id="sb" onclick="cyc()">SYM:OFF</button>
+
     <script>
         var G = document.getElementById('g');
         var i=0;
         for(; i<64; i++) {
             var d = document.createElement('div');
             d.className='c';
-            d.onclick = function() {
-                this.classList.toggle('on');
-            };
             G.appendChild(d);
         }
+        var drw=0;
+            dir=0;
+            mov=0;
+            sym=0;
+
+        var sl=['SYM:OFF', 'SYM:H', 'SYM:V', 'SYM:Q'];
+
+        function cyc() {
+            sym=(sym+1) % 4;
+            document.getElementById('sb').textContent = sl[sym];
+            
+        }
+
         function rnd() {
             var c = G.children;
             for (var j = 0; j < 64; j++) {
                 c[j].classList[Math.random() > 0.5 ? 'add' : 'remove']('on');
             };
         }
+        
     </script>
 </body>
 </html>
