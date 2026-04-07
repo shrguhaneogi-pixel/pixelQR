@@ -103,7 +103,6 @@
         var mode=0,
             drw=0,
             dir=0,
-            mov=0,
             sym=0,
             anim=null,
             life=null;
@@ -132,12 +131,27 @@
             document.getElementById('sb').textContent = sl[sym];
         }
 
+        function getSym() {
+            var x=n%8;
+            var y=(n-x)/8;
+            var s=new Set();
+            s.add(n);
+            if(sym===1 || sym===3) s.add(y*8 + (7-x));
+            if(sym===2 || sym===3) s.add((7-y)*8 + x);
+            if(sym===3) s.add((7-y)*8 + (7-x));
+            return s;
+        }
+
         function animT() {
             var c = G.children;
             var count=0;
             while(count<8) {
                 var n = ~~(Math.random()*64);
-                c[n].classList.toggle('on');
+                var group = getSym(n);
+                var toOn = !c[n].classList.contains('on');
+                group.forEach(function(idx) {
+                        c[idx].classList[toOn ? 'add' : 'remove']('on');
+                });
                 count++;
             }
         }
@@ -173,20 +187,9 @@
             if(!c[n] || !c[n].classList.contains('c')) return;
             
             if(mode!==0) return;
-            c[n].classList[dir ? 'add' : 'remove']('on');
-            
-            var x = n % 8;
-            var y = (n-x) / 8;
-
-            if(sym===1 || sym===3) {
-                c[y*8 + (7-x)].classList[dir ? 'add' : 'remove']('on');
-            }
-            if(sym===2 || sym===3) {
-                c[(7-y)*8 + x].classList[dir ? 'add' : 'remove']('on');
-            }
-            if(sym===3) {
-                c[(7-y)*8 + (7-x)].classList[dir ? 'add' : 'remove']('on');
-            }
+            getSym(n).forEach(function(idx) {
+                c[idx].classList[dir ? 'add' : 'remove']('on');
+            });
         }
 
         G.addEventListener('pointerdown', function(e) {
