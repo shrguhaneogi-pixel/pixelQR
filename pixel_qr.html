@@ -160,10 +160,7 @@
         });
 
         function inv() {
-            var c = G.children;
-            for (var j = 0; j < 64; j++) {
-                c[j].classList.toggle('on');
-            };
+            for(i=0; i<64; i++) G.children[i].classList.toggle('on');
         }
 
         function rnd() {
