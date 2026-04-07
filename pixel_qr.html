@@ -69,7 +69,6 @@
         }
 
         button {
-            margin-top: 12px;
             padding: 8px 16px;
             background-color: #f0e040;
             border: none;
@@ -91,23 +90,22 @@
     <h1>Pixel QR</h1>
     <div id="g"></div>
     <div class="btns">
-        <button onclick="nextMode()">MODE:DRAW</button>
+        <button id="mb" onclick="nextMode()">MODE:DRAW</button>
         <button id="sb" onclick="nextSym()">SYM:OFF</button>
     </div>
     <script>
         var G = document.getElementById('g');
-        var i=0;
-        for(; i<64; i++) {
+        for(let i=0; i<64; i++) {
             var d = document.createElement('div');
             d.className='c';
             G.appendChild(d);
         }
-        var mode=0;
-            drw=0;
-            dir=0;
-            mov=0;
-            sym=0;
-            anim=null;
+        var mode=0,
+            drw=0,
+            dir=0,
+            mov=0,
+            sym=0,
+            anim=null,
             life=null;
 
         var ml=['MODE:DRAW', 'MODE:ANIMATE', 'MODE:CONWAY'];  
@@ -115,13 +113,13 @@
 
         function setMode(n) {
             clearInterval(anim); anim=null;
-            clearTimeout(life); life=null;
+            clearInterval(life); life=null;
             mode = n%3;
             document.getElementById('mb').textContent = ml[mode];
             if(mode===1) {
                 anim = setInterval(animT, 120);
             } else if(mode===2) {
-                life = setTimeout(conway, 500);
+                life = setInterval(conway, 500);
             }
         }
 
@@ -147,39 +145,36 @@
         function conway() {
             var c = G.children;
             var cur = [];
-            for(var i=0; i<64; i++) {
-                cur[i] = c[i].classList.contains('on') ? 1 : 0;
-            }
+            for(let i=0; i<64; i++) cur[i] = c[i].classList.contains('on') ? 1 : 0;
             var nxt=[];
-            for(var i=0; i<64; i++) {
+            for(let i=0; i<64; i++) {
                 var x = i % 8;
                 var y = (i-x) / 8;
                 var n = 0;
-                for(var j=-1; j<=1; j++) {
-                    for(var i=-1; i<=1; i++) {
-                        if(i===0 && j===0) continue;
-                        var nx = (x + i + 8) % 8;
+                for(let j=-1; j<=1; j++) {
+                    for(let k=-1; k<=1; k++) {
+                        if(j===0 && k===0) continue;
+                        var nx = (x + k + 8) % 8;
                         var ny = (y + j + 8) % 8;
                         n += cur[ny*8 + nx];
                     }
-                    }
                 }
-                if(cur[i].classList.contains('on')) {
-                    if(n<2 || n>3) changes.push(i);
+                if(cur[i] === 1) {
+                    if(n<2 || n>3) nxt.push(i);
                 } else {
-                    if(n===3) changes.push(i);
+                    if(n===3) nxt.push(i);
                 }
-            for(var i=0; i<changes.length; i++) {
-                c[changes[i]].classList.toggle('on');
             }
+            for(let i=0; i<nxt.length; i++) c[nxt[i]].classList.toggle('on');
         }
 
         function pnt(n) {
             var c = G.children;
             if(!c[n] || !c[n].classList.contains('c')) return;
-            c[n].classList[dir ? 'add' : 'remove']('on');
             
             if(mode!==0) return;
+            c[n].classList[dir ? 'add' : 'remove']('on');
+            
             var x = n % 8;
             var y = (n-x) / 8;
 
@@ -228,7 +223,7 @@
         });
 
         function inv() {
-            for(i=0; i<64; i++) G.children[i].classList.toggle('on');
+            for(let i=0; i<64; i++) G.children[i].classList.toggle('on');
         }      
     </script>
 </body>
