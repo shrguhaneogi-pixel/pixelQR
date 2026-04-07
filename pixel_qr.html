@@ -167,10 +167,14 @@
         }
 
         function rnd() {
-            var c = G.children;
-            for (var j = 0; j < 64; j++) {
-                c[j].classList[Math.random() > 0.5 ? 'add' : 'remove']('on');
-            };
+            var maxX = (sym & 1) ? 4 : 8;
+            var maxY = (sym & 2) ? 4 : 8;
+            for (var y = 0; y < maxY; y++) {
+                for (var x = 0; x < maxX; x++) {
+                    dir = Math.random() < 0.5 ? 0 : 1;
+                    pnt(y * 8 + x);
+                }
+            }
         }
         
     </script>
