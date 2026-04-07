@@ -62,6 +62,12 @@
             letter-spacing: 2px;
         }
 
+        .btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
         button {
             margin-top: 12px;
             padding: 8px 16px;
@@ -75,14 +81,19 @@
             letter-spacing: 1px;
             transition: background-color 0.1s ease;
         }
+
+        button:hover {
+            background-color: #ffe800;
+        }
     </style>
 </head>
 <body>
     <h1>Pixel QR</h1>
     <div id="g"></div>
-    <button onclick="rnd()">RNDM</button>
-    <button id="sb" onclick="cyc()">SYM:OFF</button>
-
+    <div class="btns">
+        <button onclick="nextMode()">MODE:DRAW</button>
+        <button id="sb" onclick="nextSym()">SYM:OFF</button>
+    </div>
     <script>
         var G = document.getElementById('g');
         var i=0;
@@ -91,17 +102,76 @@
             d.className='c';
             G.appendChild(d);
         }
-        var drw=0;
+        var mode=0;
+            drw=0;
             dir=0;
             mov=0;
             sym=0;
+            anim=null;
+            life=null;
 
+        var ml=['MODE:DRAW', 'MODE:ANIMATE', 'MODE:CONWAY'];  
         var sl=['SYM:OFF', 'SYM:H', 'SYM:V', 'SYM:Q'];
 
-        function cyc() {
-            sym=(sym+1) % 4;
+        function setMode(n) {
+            clearInterval(anim); anim=null;
+            clearTimeout(life); life=null;
+            mode = n%3;
+            document.getElementById('mb').textContent = ml[mode];
+            if(mode===1) {
+                anim = setInterval(animT, 120);
+            } else if(mode===2) {
+                life = setTimeout(conway, 500);
+            }
+        }
+
+        function nextMode() {
+            setMode(mode+1);
+        }
+
+        function nextSym() {
+            sym = (sym+1)%4;
             document.getElementById('sb').textContent = sl[sym];
-            
+        }
+
+        function animT() {
+            var c = G.children;
+            var count=0;
+            while(count<8) {
+                var n = ~~(Math.random()*64);
+                c[n].classList.toggle('on');
+                count++;
+            }
+        }
+
+        function conway() {
+            var c = G.children;
+            var cur = [];
+            for(var i=0; i<64; i++) {
+                cur[i] = c[i].classList.contains('on') ? 1 : 0;
+            }
+            var nxt=[];
+            for(var i=0; i<64; i++) {
+                var x = i % 8;
+                var y = (i-x) / 8;
+                var n = 0;
+                for(var j=-1; j<=1; j++) {
+                    for(var i=-1; i<=1; i++) {
+                        if(i===0 && j===0) continue;
+                        var nx = (x + i + 8) % 8;
+                        var ny = (y + j + 8) % 8;
+                        n += cur[ny*8 + nx];
+                    }
+                    }
+                }
+                if(cur[i].classList.contains('on')) {
+                    if(n<2 || n>3) changes.push(i);
+                } else {
+                    if(n===3) changes.push(i);
+                }
+            for(var i=0; i<changes.length; i++) {
+                c[changes[i]].classList.toggle('on');
+            }
         }
 
         function pnt(n) {
