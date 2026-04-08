@@ -1,0 +1,57 @@
+name: Automated QR Code Build
+
+on:
+    push:
+        branches: ["main"]
+
+permissions:
+    contents: write
+jobs:
+    build-and-release:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y qrencode 
+                  npm install -g html-minifier-terser
+
+            - name: Minify HTML
+              run: |
+                  html-minifier-terser \
+                      --collapse-whitespace \
+                      --remove-comments \
+                      --remove-optional-tags \
+                      --remove-redundant-attributes \
+                      --remove-script-type-attributes \
+                      --remove-tag-whitespace \
+                      --use-short-doctype \
+                      --minify-css true \
+                      --minify-js true \
+                      pixel_qr.html -o minified.html
+
+            - name: Generate QR Code
+              run: |
+                  # URL-encode the minified HTML using Node.js to make it browser-safe
+                    ENCODED_HTML=$(node -e "console.log(encodeURIComponent(require('fs').readFileSync('minified.html', 'utf8')));")
+
+                    DATA_URI="data:text/html;charset=utf-8,${ENCODED_HTML}"
+
+                    echo "Final Data URI: ${#DATA_URI} characters"
+
+                    qrencode -s 10 -l L -o pixelQR.png "$DATA_URI"
+
+            - name: Publish Github Release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # Create a dynamic version tag based on the Github run number
+                  TAG_NAME="v1.0.${{ github.run_number }}"
+
+                  gh release create "$TAG_NAME" pixelQR.png \
+                        --title "PixelQR Build $TAG_NAME" \
+                        --notes "Automated QR code generated from the latest push." \
+                        --latest
