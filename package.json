@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "html-minifier-next": "^6.1.2"
+  }
+}
