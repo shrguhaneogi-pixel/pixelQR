@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel QR</title>
+<style>
+:root {
+    --c0: #222;
+    --c1: #f0e040;
+    --c2: #f05080;
+    --c3: #0cf;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #111;
+    font-family: sans-serif;
+}
+h1 { color: var(--c1); font-size: 18px; margin-bottom: 12px; letter-spacing: 2px; }
+#g {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
+    padding: 12px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    touch-action: none;
+}
+#g.rainbow { animation: huerot 1.5s linear infinite; }
+#g.chaos { animation: spin 0.3s linear infinite; filter: saturate(5); }
+@keyframes huerot { to { filter: hue-rotate(360deg); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.c {
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+.s0 { background: var(--c0); }
+.s1 { background: var(--c1); }
+.s2 { background: var(--c2); }
+.s3 { background: var(--c3); }
+.btns { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+button {
+    padding: 8px 14px;
+    background: var(--c1);
+    border: none;
+    border-radius: 6px;
+    color: #111;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+button:hover { background: #ffe800; }
+#pb { display: none; }
+</style>
+</head>
+<body>
+<h1>Pixel QR</h1>
+<div id="g"></div>
+<div class="btns">
+    <button id="mb" onclick="nextMode()">MODE:DRAW</button>
+    <button id="pb" onclick="togglePlay()">&#9654;</button>
+    <button id="sb" onclick="nextSym()">SYM:OFF</button>
+</div>
+<script>
+var G = document.getElementById('g');
+var S = new Uint8Array(64);
+var mode = 0, sym = 0, drw = 0, startColor = 0;
+var animI = null, lifeI = null, glitchI = null, chaosI = null;
+var lifePlaying = false;
+var konamiSeq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight'];
+var konamiPos = 0;
+var cornerSeq = [0, 7, 56, 63];
+var cornerPos = 0;
+var cornerToggle = 0;
+var rippleGen = 0;
+var glitchRafPending = false;
+
+var ml = ['MODE:DRAW','MODE:ANIMATE','MODE:CONWAY','MODE:GLITCH','MODE:RIPPLE'];
+var sl = ['SYM:OFF','SYM:H','SYM:V','SYM:Q'];
+
+for (var i = 0; i < 64; i++) {
+    var d = document.createElement('div');
+    d.className = 'c s0';
+    G.appendChild(d);
+}
+
+function setCell(i, v) {
+    S[i] = v;
+    G.children[i].className = 'c s' + v;
+}
+
+function getSym(n) {
+    var x = n % 8, y = (n - x) / 8;
+    var s = new Set();
+    s.add(n);
+    if (sym === 1 || sym === 3) s.add(y * 8 + (7 - x));
+    if (sym === 2 || sym === 3) s.add((7 - y) * 8 + x);
+    if (sym === 3) s.add((7 - y) * 8 + (7 - x));
+    return s;
+}
+
+function pnt(n) {
+    getSym(n).forEach(function(idx) {
+        setCell(idx, (startColor + 1) % 4);
+    });
+}
+
+function setMode(n) {
+    clearInterval(animI); animI = null;
+    clearInterval(lifeI); lifeI = null;
+    clearInterval(glitchI); glitchI = null;
+    clearInterval(chaosI); chaosI = null;
+    G.classList.remove('chaos');
+    G.style.filter = '';
+    glitchRafPending = false;
+    lifePlaying = false;
+    drw = 0;
+    mode = n % 5;
+    document.getElementById('mb').textContent = ml[mode];
+    var pb = document.getElementById('pb');
+    if (mode === 1) {
+        animI = setInterval(animTick, 120);
+        pb.style.display = 'none';
+    } else if (mode === 2) {
+        pb.style.display = '';
+        pb.textContent = '\u25B6';
+    } else if (mode === 3) {
+        pb.style.display = 'none';
+        glitchI = setInterval(glitchTick, 80);
+    } else {
+        pb.style.display = 'none';
+    }
+}
+
+function nextMode() { setMode(mode + 1); }
+function nextSym() { sym = (sym + 1) % 4; document.getElementById('sb').textContent = sl[sym]; }
+
+function togglePlay() {
+    if (lifePlaying) {
+        clearInterval(lifeI); lifeI = null;
+        lifePlaying = false;
+        document.getElementById('pb').textContent = '\u25B6';
+    } else {
+        lifeI = setInterval(conway, 150);
+        lifePlaying = true;
+        document.getElementById('pb').textContent = '\u23F8';
+    }
+}
+
+function animTick() {
+    var count = 0;
+    while (count < 8) {
+        var n = ~~(Math.random() * 64);
+        var v = (S[n] + 1) % 4;
+        getSym(n).forEach(function(idx) { setCell(idx, v); });
+        count++;
+    }
+}
+
+function conway() {
+    var cur = S.slice();
+    var changes = [];
+    for (var i = 0; i < 64; i++) {
+        var x = i % 8, y = (i - x) / 8;
+        var n = [-1, 0, 1].reduce(function(acc, j) {
+            return acc + [-1, 0, 1].reduce(function(a, k) {
+                if (j === 0 && k === 0) return a;
+                return a + (cur[((y + j + 8) % 8) * 8 + (x + k + 8) % 8] > 0 ? 1 : 0);
+            }, 0);
+        }, 0);
+        if (cur[i] > 0) {
+            if (n < 2 || n > 3) changes.push([i, 0]);
+        } else {
+            if (n === 3) changes.push([i, 1]);
+        }
+    }
+    changes.forEach(function(c) { setCell(c[0], c[1]); });
+}
+
+function glitchTick() {
+    var count = 3 + ~~(Math.random() * 3);
+    for (var i = 0; i < count; i++) {
+        setCell(~~(Math.random() * 64), ~~(Math.random() * 4));
+    }
+    glitchRafPending = true;
+    G.style.filter = 'invert(1)';
+    requestAnimationFrame(function() {
+        if (!glitchRafPending) return;
+        glitchRafPending = false;
+        G.style.filter = '';
+    });
+}
+
+function ripple(n) {
+    var gen = ++rippleGen;
+    var xn = n % 8, yn = (n - xn) / 8;
+    for (var k = 0; k < 64; k++) {
+        if (k === n) continue;
+        var xk = k % 8, yk = (k - xk) / 8;
+        var d = Math.abs(xk - xn) + Math.abs(yk - yn);
+        (function(idx, delay) {
+            setTimeout(function() {
+                if (rippleGen !== gen) return;
+                var orig = S[idx];
+                setCell(idx, orig === 0 ? 1 : 0);
+                setTimeout(function() {
+                    if (rippleGen !== gen) return;
+                    setCell(idx, orig);
+                }, 200);
+            }, delay);
+        })(k, d * 60);
+    }
+}
+
+function inv() {
+    for (var i = 0; i < 64; i++) setCell(i, (S[i] + 1) % 4);
+}
+
+function checkCorner(n) {
+    if (cornerSeq.indexOf(n) === -1) {
+        cornerPos = 0;
+        return;
+    }
+    if (n === cornerSeq[cornerPos]) {
+        cornerPos++;
+        if (cornerPos === 4) {
+            cornerPos = 0;
+            cornerToggle ^= 1;
+            if (cornerToggle) G.classList.add('rainbow');
+            else G.classList.remove('rainbow');
+        }
+    } else {
+        cornerPos = (n === cornerSeq[0]) ? 1 : 0;
+    }
+}
+
+function activateChaos() {
+    G.classList.remove('rainbow');
+    G.classList.add('chaos');
+    chaosI = setInterval(function() {
+        for (var i = 0; i < 64; i++) setCell(i, ~~(Math.random() * 4));
+    }, 30);
+}
+
+function cancelChaos() {
+    clearInterval(chaosI); chaosI = null;
+    G.classList.remove('chaos');
+    if (cornerToggle) G.classList.add('rainbow');
+    konamiPos = 0;
+}
+
+G.addEventListener('pointerdown', function(e) {
+    var t = e.target;
+    if (!t.classList.contains('c')) return;
+    var n = Array.prototype.indexOf.call(G.children, t);
+    checkCorner(n);
+    if (mode === 0) {
+        drw = 1;
+        startColor = S[n];
+        pnt(n);
+    } else if (mode === 4) {
+        ripple(n);
+    }
+});
+
+G.addEventListener('pointermove', function(e) {
+    if (!drw || mode !== 0) return;
+    var t = e.target;
+    if (t && t.classList.contains('c')) {
+        var n = Array.prototype.indexOf.call(G.children, t);
+        if (S[n] !== (startColor + 1) % 4) pnt(n);
+    }
+});
+
+document.addEventListener('pointerup', function() { drw = 0; });
+document.addEventListener('pointercancel', function() { drw = 0; });
+
+G.addEventListener('dblclick', function() { inv(); });
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'i') { inv(); return; }
+    if (e.key === 'Escape' && chaosI) { cancelChaos(); return; }
+    if (e.key === konamiSeq[konamiPos]) {
+        konamiPos++;
+        if (konamiPos === konamiSeq.length) {
+            if (chaosI) cancelChaos();
+            else activateChaos();
+        }
+    } else {
+        konamiPos = e.key === konamiSeq[0] ? 1 : 0;
+    }
+});
+</script>
+</body>
+</html>
