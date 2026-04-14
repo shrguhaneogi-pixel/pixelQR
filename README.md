@@ -47,9 +47,9 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 ---
 
 
-### ◈ Features (The Chaos Manifest)
+## ◈ Features (The Chaos Manifest)
  
-#### What It Does
+### What It Does
  
 - **Draw & Erase** — Click or drag across the 8×8 grid to toggle pixels green/dark
 - **Symmetry Modes** — Cycle through `SYM → H → V → Q` for horizontal, vertical, and quad-radial mirroring
@@ -59,15 +59,11 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 #### What It Deliberately Does Not Do
  
 - ❌ Save your work
-- ❌ Export your creation
 - ❌ Phone home to analytics
 - ❌ Ask for notification permissions
-- ❌ Load a 47 kB icon font to render one button
-- ❌ Import React
 - ❌ Have a loading spinner (it loads in 0ms)
 - ❌ Require a login
 - ❌ Have a cookie consent banner
-- ❌ Exist on any server
 
 ---
 
@@ -126,10 +122,10 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 ```
 
 <div align="center">
- 
-*Made with monospace fonts, pointer events, and a deep suspicion of npm.*
- 
-[![HackClub](https://img.shields.io/badge/Hack_Club-SayCheese_2025-06140B?style=for-the-badge&labelColor=06140B&color=80F0A4)](https://saycheese.hackclub.com)
+
+<p align="center">
+  <img src="qr.png" alt="Scan to open pixelQR" width="300" />
+</p>
  
 ```
 > SYSTEM: pixelqr.exe
@@ -139,5 +135,9 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 > UPTIME: until you close the tab
 > _
 ```
+ 
+*Made with monospace fonts, pointer events, and a deep suspicion of npm.*
+ 
+[![HackClub](https://img.shields.io/badge/Hack_Club-SayCheese_2025-06140B?style=for-the-badge&labelColor=06140B&color=80F0A4)](https://saycheese.hackclub.com)
  
 </div>
