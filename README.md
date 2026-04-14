@@ -1,3 +1,6 @@
+<table><tr>
+<td valign="middle">
+
 ```
 ██████╗ ██╗██╗  ██╗███████╗██╗      ██████╗ ██████╗
 ██╔══██╗██║╚██╗██╔╝██╔════╝██║     ██╔═══██╗██╔══██╗
@@ -6,6 +9,14 @@
 ██║     ██║██╔╝ ██╗███████╗███████╗╚██████╔╝██║  ██║
 ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝ ╚══▀▀═╝ ╚═╝  ╚═╝
 ```
+
+</td>
+<td valign="middle" align="center" width="220">
+<img src="qr.png" width="120" alt="PixelQR — scan to run the app" title="The entire application. Right here. Scan it." />
+<br/>
+<sub><i>← the entire app, right there</i></sub>
+</td>
+</tr></table>
 
 <div align="center">
 
@@ -126,7 +137,7 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 <p align="center">
   <img src="qr.png" alt="Scan to open pixelQR" width="300" />
 </p>
- 
+
 ```
 > SYSTEM: pixelqr.exe
 > STATUS: running
