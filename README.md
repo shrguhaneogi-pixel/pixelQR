@@ -47,16 +47,16 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 ---
 
 
-## ◈ Features (The Chaos Manifest)
+### ◈ Features (The Chaos Manifest)
  
-### What It Does
+#### What It Does
  
 - **Draw & Erase** — Click or drag across the 8×8 grid to toggle pixels green/dark
 - **Symmetry Modes** — Cycle through `SYM → H → V → Q` for horizontal, vertical, and quad-radial mirroring
 - **Invert** — Double-click the canvas, press `i`, or enter the Konami Code to flip all pixels
 - **Transient by Design** — Zero persistence. No `localStorage`. No cookies. No sync. Your art lives for exactly as long as the tab is open. Impermanence is the point.
  
-### What It Deliberately Does Not Do
+#### What It Deliberately Does Not Do
  
 - ❌ Save your work
 - ❌ Export your creation
@@ -71,21 +71,6 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
 
 ---
 
-
-<div align="center">
- 
-*Made with monospace fonts, pointer events, and a deep suspicion of npm.*
- 
-[![HackClub](https://img.shields.io/badge/Hack_Club-SayCheese_2025-06140B?style=for-the-badge&labelColor=06140B&color=80F0A4)](https://saycheese.hackclub.com)
- 
-```
-> SYSTEM: pixelqr.exe
-> STATUS: running
-> MEMORY: 2110 bytes
-> DEPENDENCIES: 0
-> UPTIME: until you close the tab
-> _
-```
  
 </div>
 
@@ -139,28 +124,20 @@ SayCheese is a Hack Club initiative with a single, absurd, beautiful rule: **you
                     ▼
         ✦ App runs. No server pinged. ✦
 ```
- 
-### The Data URI Contract
- 
-A Data URI is a URI scheme defined in [RFC 2397](https://datatracker.ietf.org/doc/html/rfc2397). The format is simple and brutal:
- 
-```
-data:[<mediatype>][;base64],<data>
-```
- 
-For PixelQR:
-```
-data:text/html;base64,PCFkb2N0eXBlIGh0bWw+...
-```
- 
-The browser receives this string, sees `text/html`, decodes the Base64, and renders it as a full HTML document. **No request is made. No DNS is resolved. No server exists.**  
-This is not a trick. This is the web platform working exactly as designed, from 1995, being used in a way that would confuse most senior developers in 2025.
- 
-### Why Base64 Over Percent-Encoding
- 
-Two encoding options exist for Data URIs:
-- `data:text/html,<percent-encoded>` — shorter, but Chrome on Android blocks navigation to `data:` URIs from external contexts (phishing mitigation, Chrome 65+)
-- `data:text/html;base64,<base64>` — 33% larger, but universally accepted across iOS Safari, Firefox Android, and Samsung Internet
- 
-The Base64 variant is **2,846 chars**. The percent-encoded variant would be **~2,600 chars**. The 246-char savings aren't worth the compatibility hit on Android Chrome. Production realism over premature optimisation.
 
+<div align="center">
+ 
+*Made with monospace fonts, pointer events, and a deep suspicion of npm.*
+ 
+[![HackClub](https://img.shields.io/badge/Hack_Club-SayCheese_2025-06140B?style=for-the-badge&labelColor=06140B&color=80F0A4)](https://saycheese.hackclub.com)
+ 
+```
+> SYSTEM: pixelqr.exe
+> STATUS: running
+> MEMORY: 2110 bytes
+> DEPENDENCIES: 0
+> UPTIME: until you close the tab
+> _
+```
+ 
+</div>
